@@ -1,125 +1,146 @@
 ---Hotel Management Data Analysis focusing on revenue and loss through canceled bookings.
 
+---create database hotel management
+create database hotel_management;
+
+---use database 
+use hotel_management;
 
 ---showing all columns
 Select *
-From dbo.Hotel
+From SHG_Booking_Data;
 
 --- checking for nulls
 select *
-from dbo.hotel
-where [Booking Date] is null
+from SHG_Booking_Data
+where Booking_Date is null;
 --- No nulls for booking Date
 
 select *
-from dbo.hotel
-where Hotel is null
+from SHG_Booking_Data
+where Hotel is null;
 ---No nulls for column Hotel
 
 select *
-from dbo.hotel
-where [Arrival Date] is null
+from SHG_Booking_Data
+where Arrival_Date is null;
 ---No nulls for Arrival date
  
  select *
-from dbo.hotel
-where [Booking ID] is null
+from SHG_Booking_Data
+where Booking_ID is null;
 ---No nulls for Booking Id
 
 select *
-from dbo.hotel
-where [Lead Time] is null
+from SHG_Booking_Data
+where Lead_Time is null;
 ---No null values
 
 select *
-from dbo.hotel
-where [Nights] is null
+from SHG_Booking_Data
+where Nights is null;
 ---No null values
 
 select *
-from dbo.hotel
-where [Guests] is null
+from SHG_Booking_Data
+where Guests is null;
 ---No nulls values.
 
 select *
-from dbo.hotel
-where [Distribution Channel] is null
+from SHG_Booking_Data
+where Distribution_Channel is null;
 ---No null values
 
 select *
-from dbo.hotel
-where [Customer Type] is null
+from SHG_Booking_Data
+where Customer_Type is null;
 ---No null values.
 
 select *
-from dbo.hotel
-where [Deposit type] is null
+from SHG_Booking_Data
+where Deposit_type is null;
 ---No null values.
 
 select *
-from dbo.hotel
-where [Avg Daily Rate] is null
+from SHG_Booking_Data
+where Avg_Daily_Rate is null;
 ---No null values.
 
 select *
-from dbo.hotel
-where [Status] is null
+from SHG_Booking_Data
+where Status is null;
 ---No null values
 
 select *
-from dbo.hotel
-where Cancelled is null
+from SHG_Booking_Data
+where Cancelled is null;
 ---No null values
 
 select *
-from dbo.hotel
-where Revenue is null
+from SHG_Booking_Data
+where Revenue is null;
 ---No null values
 
 select *
-from dbo.hotel
-where [Revenue loss] is null
+from SHG_Booking_Data
+where [Revenue loss] is null;
 ---No null values
 
 
 Select *
-from dbo.hotel
-where Country is null
+from SHG_Booking_Data
+where Country is null;
 --Null values found
+	
 Select country, count(*)
-From dbo.hotel
+From SHG_Booking_Data
 group by country
-having country is null
+having country is null;
 --- 488 columns of null values
 
 ---Replacing Null Values
-update dbo.hotel
+update SHG_Booking_Data
 Set country = ISNULL(Country,'Portugal')
 ---Null columns replaced with most used country Portugal..
 
 ---Adding column Season
-Alter Table dbo.hotel
-Add Season varchar(50)
+Alter Table SHG_Booking_Data
+Add Season varchar(50);
 
-Update dbo.hotel
+Update SHG_Booking_Data
 Set Season = Case
-            When month([Booking Date]) in (12, 1, 2 ) then 'Winter'
-			When month([Booking Date]) in (3, 4, 5) then 'Spring'
-			when month([Booking Date]) in (6, 7, 8) then 'Summer'
-			When month([Booking Date]) in (9, 10, 11) then 'Autumn'
-			End
+                        When month(Booking_Date) in (12, 1, 2 ) then 'Winter'
+			When month(Booking_Date) in (3, 4, 5) then 'Spring'
+			when month(Booking_Date) in (6, 7, 8) then 'Summer'
+			When month(Booking_Date) in (9, 10, 11) then 'Autumn'
+			End;
 ---Column Season Added
 
+---- Rename Season to Booking_Season
+EXEC sp_rename 'SHG_Booking_Data.Season', 'Booking_Season', 'COLUMN';
+
+---Adding column Arrival_Season
+Alter Table SHG_Booking_Data
+Add Arrival_Season varchar(50);
+
+Update SHG_Booking_Data
+Set Arrival_Season = Case
+                        When month(Arrival_Date) in (12, 1, 2 ) then 'Winter'
+			When month(Arrival_Date) in (3, 4, 5) then 'Spring'
+			when month(Arrival_Date) in (6, 7, 8) then 'Summer'
+			When month(Arrival_Date) in (9, 10, 11) then 'Autumn'
+			End;
+
 ---Removing irrelevant column.
-Alter Table dbo.hotel
-Drop column F18
+Alter Table  SHG_Booking_Data
+Drop column18;
 
 ---ANALYSIS
 
 ---Customer type with more revenue and loss
-select [Customer Type], sum(Revenue) as Revenue, sum([Revenue Loss]) as Loss
-From dbo.hotel
-Group by [Customer Type]
+select Customer_Type, sum(Revenue) as Revenue, sum(Revenue_Loss) as Loss
+From SHG_Booking_Data
+Group by Customer_Type
 Order by Revenue Desc
 --- Transient
 
@@ -144,7 +165,6 @@ From dbo.hotel
 Group by Season
 Order by Revenue Desc
 ---Winter
-
 
 ---Hotel with more revenue
 select hotel, sum(Revenue) as Revenue, sum([Revenue Loss]) as Loss
@@ -198,8 +218,9 @@ from dbo.hotel
   from Hotel
   group by [Customer Type]
 ---- Transient customers canceled the highest number of bookings.
-
-
+	
+---- Rename Season to Booking_Season
+EXEC sp_rename 'SHG_Booking_Data.Season', 'Booking_Season', 'COLUMN';
 
 
 
