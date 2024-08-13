@@ -18,7 +18,7 @@ where Booking_Date is null;
 
 select *
 from SHG_Booking_Data
-where Hotel is null;
+where Location_Type is null;
 ---No nulls for column Hotel
 
 select *
@@ -86,7 +86,6 @@ from SHG_Booking_Data
 where [Revenue loss] is null;
 ---No null values
 
-
 Select *
 from SHG_Booking_Data
 where Country is null;
@@ -108,16 +107,13 @@ Alter Table SHG_Booking_Data
 Add Season varchar(50);
 
 Update SHG_Booking_Data
-Set Season = Case
+Set Booking_Season = Case
                         When month(Booking_Date) in (12, 1, 2 ) then 'Winter'
 			When month(Booking_Date) in (3, 4, 5) then 'Spring'
 			when month(Booking_Date) in (6, 7, 8) then 'Summer'
 			When month(Booking_Date) in (9, 10, 11) then 'Autumn'
 			End;
----Column Season Added
-
----- Rename Season to Booking_Season
-EXEC sp_rename 'SHG_Booking_Data.Season', 'Booking_Season', 'COLUMN';
+---Column Booking_Season Added
 
 ---Adding column Arrival_Season
 Alter Table SHG_Booking_Data
@@ -147,7 +143,6 @@ Group by Distribution_Channel
 Order by Revenue Desc;
 ---Online Travel Agent.
 
-
 ---Country with highest revenue and loss
 select country, sum(Revenue) as Revenue, sum(Revenue_Loss) as Loss
 From SHG_Booking_Data
@@ -169,12 +164,12 @@ Group by Arrival_Season
 Order by Revenue Desc;
 ---Summer
 
----Hotel with more revenue
-select hotel, sum(Revenue) as Revenue, sum(Revenue_Loss) as Loss
+---Location Type with more revenue
+select Location_Type, sum(Revenue) as Revenue, sum(Revenue_Loss) as Loss
 From SHG_Booking_Data
-Group by hotel
+Group by Location_Type
 Order by Revenue Desc;
----City Hotel
+---The City location type got the highest revenue
 
 ---monthly Revenue and Loss.
 select month(Booking_Date) as Booking_Month, sum(Revenue) as Revenue, sum(Revenue_Loss) as Loss
@@ -204,29 +199,19 @@ WITH yearly_sales As
    
 ---BOOKINGS
 ---%cancelled
-Select Count(cancelled) as Bookings, 
-        sum(cancelled) As Canceled_Booking,
-		(sum(cancelled)/count(cancelled))*100 as Percent_Canceled
-from SHG_Booking_Data
+select (sum(Cancelled) * 100.00) / count (*) as Cancellation_percentage
+from SHG_Booking_Data;
 --- 37% canceled  hotel bookings.
 
 --- Canceled booking by distribution Channel
-  select [Distribution Channel], sum(cancelled) as Canceled_Bookings
-  from Hotel
-  group by [Distribution Channel]
+  select Distribution_Channel, sum(Cancelled) as Canceled_Bookings
+  from SHG_Booking_Data
+  group by Distribution_Channel;
 ---- Online Travel Agents canceled the highest number of bookings
 
 ---- Canceled Bookings by Customer Type
-  select [Customer Type], sum(cancelled) as Canceled_Bookings
-  from Hotel
-  group by [Customer Type]
+  select Customer_Type, sum(cancelled) as Canceled_Bookings
+  from SHG_Booking_Data
+  group by Customer_Type
 ---- Transient customers canceled the highest number of bookings.
 	
----- Rename Season to Booking_Season
-EXEC sp_rename 'SHG_Booking_Data.Season', 'Booking_Season', 'COLUMN';
-
-
-
----Removing irrelevant column.
-Alter Table  SHG_Booking_Data
-Drop column18;
