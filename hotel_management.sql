@@ -83,7 +83,7 @@ where Revenue is null;
 
 select *
 from SHG_Booking_Data
-where [Revenue loss] is null;
+where Revenue_loss is null;
 ---No null values
 
 Select *
@@ -99,12 +99,12 @@ having country is null;
 
 ---Replacing Null Values
 update SHG_Booking_Data
-Set country = ISNULL(Country,'Portugal')
----Null values replaced with Nigeria.
+Set country = ISNULL(Country,'Nigeria')
+---Null values replaced with country Nigeria.
 
 ---Adding column Season
 Alter Table SHG_Booking_Data
-Add Season varchar(50);
+Add Booking_Season varchar(50);
 
 Update SHG_Booking_Data
 Set Booking_Season = Case
